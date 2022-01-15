@@ -46,7 +46,7 @@ const ItemsSchema = new Schema({
         default: "BLUE"
     },
     bharatStage: {
-        type: "String",
+        type: String,
         default: "IV/VI/Bharat (Terms) Stage III/IIIA etc."
     },
     tradeCertificateNumber: {
