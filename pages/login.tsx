@@ -123,7 +123,7 @@ const Login: NextPage = () => {
                             </section> : null
                     }
                     <section className='mt-2 w-full flex justify-center items-center'>
-                        <button className='text-slate-50 font-thin text-base md:text-lg' onClick={() => Router.push('/register')}>don't have a account? register!</button>
+                        <button className='text-slate-50 font-thin text-base md:text-lg' onClick={() => Router.push('/register')}>don`&apos;t have a account? register!</button>
                     </section>
                 </section>
             </main>
