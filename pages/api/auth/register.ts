@@ -47,10 +47,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         const hashPassword = await hash(password, salt);
 
         await User.create({ name, email, password: hashPassword })
-            .then(result => {
-                console.log({ result });
-                res.status(200).json({ error: false, name, email, token: sign({ name, email, _id: result._id }, process.env.JWT_SECRECT as string) });
-            });
+            .then(result => res.status(200).json({ error: false, name, email, token: sign({ name, email, _id: result._id }, process.env.JWT_SECRECT as string) }));
     }
 }
 

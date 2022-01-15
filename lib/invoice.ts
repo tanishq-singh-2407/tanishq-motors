@@ -31,6 +31,13 @@ export interface Items {
     waporizerNumber?: String;
 }
 
+export interface UpdateInvoice {
+    hypothecation?: String;
+    addressOfBuyer?: String;
+    mobileNoOfBuyer?: Number;
+    deleveredOn?: Date;
+}
+
 export type Invoice = {
     user?: string;
     invoiceNo: Number;

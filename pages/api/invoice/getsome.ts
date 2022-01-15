@@ -17,7 +17,9 @@ type Data = {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const token: string = req.headers["auth-token"] as string;
+    const pageNumber: number = parseInt(req.headers["page-number"] as string) || 1;
     const verified: verifyTokenReturn = verifyToken(token);
+    const limit: number = 5;
 
     if (!verified.success)
         return res.status(300).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
@@ -27,6 +29,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
             await connectToDB();
 
             await INVOICE.find({ user: verified.data?._id })
+                .skip((pageNumber - 1) * limit)
+                .limit(limit)
                 .sort({ _id: -1 })
                 .then(result => res.status(200).json({ error: false, data: result }))
                 .catch(err_ => res.status(300).json({ error: true, message: [{ operation: "unknown-error", message: err_.code.toString() }] }));
