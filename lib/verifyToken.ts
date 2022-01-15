@@ -13,7 +13,7 @@ export type verifyTokenReturn = {
 
 const verifyToken = (token: string): verifyTokenReturn => {
     try {
-        const user = verify(token, process.env.NEXT_PUBLIC_JWT_SECRECT as string);
+        const user = verify(token, process.env.JWT_SECRECT as string);
 
         return {
             success: true,

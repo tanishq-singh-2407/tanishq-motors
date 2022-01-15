@@ -12,7 +12,7 @@ type Data = {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    if (req.method === "GET") {
+    if (req.method === "POST") {
         const token: string = req.headers["auth-token"] as string;
 
         try {

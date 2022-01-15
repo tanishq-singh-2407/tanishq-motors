@@ -1,6 +1,8 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import WithAuth from '../lib/withAuth'
+import type { GetServerSideProps, NextPage } from 'next';
+import Head from 'next/head';
+import Cookies from 'universal-cookie';
+import { useRouter } from 'next/router';
+import verifyToken from '../lib/verifyToken';
 
 interface user {
   _id: string | "as";
@@ -9,10 +11,12 @@ interface user {
   iat?: number;
 }
 
-const Home: NextPage<{ user?: user }> = ({ user }) => {
+const Home: NextPage<{ data: user }> = ({ data }) => {
+  const cookies = new Cookies();
+  const Router = useRouter();
 
   return (
-    <div className="min-h-screen w-screen flex justify-center items-center">
+    <div className="min-h-screen w-screen flex justify-center items-center flex-col">
 
       <Head>
         <title>Create Next App</title>
@@ -20,11 +24,39 @@ const Home: NextPage<{ user?: user }> = ({ user }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>DASHBOARD</h1> <br />
-      <h3>welcome {user?.name}</h3>
-
+      <h1>DASHBOARD</h1>
+      <h3>welcome {data?.name}</h3>
+      <button onClick={() => {
+        cookies.remove("auth-token");
+        Router.replace('/login');
+      }}>logout</button>
     </div>
   )
 }
 
-export default WithAuth(Home);
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const { cookies } = req;
+  const token: string = cookies["auth-token"] as string;
+
+  if (token !== undefined) { // check auth-token
+    const { success, data } = verifyToken(token);
+
+    if (success) {
+      return {
+        props: {
+          data
+        }
+      }
+    }
+  }
+
+  return {
+    props: {},
+    redirect: {
+      permanent: false,
+      destination: "/login"
+    }
+  }
+}
+
+export default Home;

@@ -40,12 +40,12 @@ const validate = async (email: string, password: string, errors: Array<errorMess
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    if (req.method === "GET") {
+    if (req.method === "POST") {
         const { email, password } = req.body;
         const errors: Array<errorMessage> = [];
 
         const _: validateType = await validate(email, password, errors, connectToDB);
-        if (_.status) return res.status(300).json({ error: true, message: errors });
+        if (_.status) return res.status(200).json({ error: true, message: errors });
 
         res.status(200).json({ error: false, token: _.token });
     }

@@ -25,7 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(300).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     switch (req.method) {
-        case "GET": // get all invoice
+        case "POST": // get all invoice
             await connectToDB();
 
             await INVOICE.find({ user: verified.data?._id })
