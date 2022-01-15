@@ -12,10 +12,8 @@ type Data = {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    if (req.method === "GET") {
+    if (req.method === "POST") {
         const token: string = req.headers["auth-token"] as string;
-
-        console.log(token);
 
         try {
             const vereifiedUser = verify(token, process.env.JWT_SECRECT as string);
