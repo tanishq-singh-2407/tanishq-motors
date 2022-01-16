@@ -91,4 +91,10 @@ const InvoiceSchema: Schema = new Schema({
     }
 });
 
-export default models.Invoice || model('Invoice', InvoiceSchema);
+const ITEMS = models.Items || model('Items', ItemsSchema);
+const INVOICE = models.Invoice || model('Invoice', InvoiceSchema);
+
+export default INVOICE;
+export {
+    ITEMS, INVOICE
+}

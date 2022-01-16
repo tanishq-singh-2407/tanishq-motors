@@ -24,21 +24,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(300).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     switch (req.method) {
-        // case "GET": // get invoice
-        //     const invoiceNumber: number = parseInt(req.headers["invoice-number"] as string) || -1;
+        case "GET": // get invoice
+            const invoiceNumber: number = parseInt(req.headers["invoice-number"] as string) || -1;
 
-        //     if (invoiceNumber === -1) return res.status(300).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not found, (set in header)." }] })
+            if (invoiceNumber === -1) return res.status(300).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not found, (set in header)." }] })
 
-        //     await connectToDB();
+            await connectToDB();
 
-        //     await INVOICE.find({
-        //         user: verified.data?._id,
-        //         invoiceNo: invoiceNumber
-        //     })
-        //         .then(result => res.status(200).json({ error: false, data: result }))
-        //         .catch(err_ => res.status(300).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }));
+            await INVOICE.find({
+                user: verified.data?._id,
+                invoiceNo: invoiceNumber
+            })
+                .then(result => res.status(200).json({ error: false, data: result }))
+                .catch(err_ => res.status(300).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }));
 
-        //     break;
+            break;
 
         case "POST": // create new invoice
             const data: Invoice = req.body;

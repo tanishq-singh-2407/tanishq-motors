@@ -39,6 +39,7 @@ export interface UpdateInvoice {
 }
 
 export type Invoice = {
+    _id?: string;
     user?: string;
     invoiceNo: Number;
     hypothecation: String;
