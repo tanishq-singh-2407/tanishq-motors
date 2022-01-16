@@ -22,7 +22,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const limit: number = 5;
 
     if (!verified.success)
-        return res.status(300).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+        return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     switch (req.method) {
         case "POST": // get all invoice
@@ -33,12 +33,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
                 .limit(limit)
                 .sort({ _id: -1 })
                 .then(result => res.status(200).json({ error: false, data: result }))
-                .catch(err_ => res.status(300).json({ error: true, message: [{ operation: "unknown-error", message: err_.code.toString() }] }));
+                .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code.toString() }] }));
 
             break;
 
         default:
-            res.status(300).json({ error: true, message: [{ operation: "unsupported", message: `Method (${req.method as string}) is not supported.` }] });
+            res.status(200).json({ error: true, message: [{ operation: "unsupported", message: `Method (${req.method as string}) is not supported.` }] });
     }
 }
 
