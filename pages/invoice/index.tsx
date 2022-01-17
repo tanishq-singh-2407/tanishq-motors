@@ -1,12 +1,8 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
-import Spinner from '../../components/spinner';
 import SideBar from '../../components/sidebar';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import isEmail from 'validator/lib/isEmail';
+import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import verifyToken from '../../lib/verifyToken';
@@ -23,6 +19,8 @@ const Login: NextPage<{ user: user; invoices: Array<Invoice> }> = ({ user, invoi
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const cookies = new Cookies();
     const Router = useRouter();
+
+    console.log({ user, invoices });
 
     return (
         <div className="h-screen w-screen flex justify-start items-center flex-col">
@@ -52,23 +50,24 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             try {
                 const response = await axios({
                     method: "POST",
-                    url: `${process.env.NEXT_API}/api/invoice/getsome`,
+                    url: `${process.env.NEXT_PUBLIC_API}/api/invoice/getsome`,
                     headers: {
                         "auth-token": token
                     }
                 });
 
-                const { data } = response;
-                const invoices: Array<Invoice> = data.data;
+                const resData = response.data;
+                const invoices: Array<Invoice> = resData.data;
 
-                if (response.data.error) throw response.data.message[0].message;
-
-                return {
-                    props: {
-                        user: data,
-                        invoices
+                if (!resData.error) {
+                    return {
+                        props: {
+                            user: data,
+                            invoices
+                        }
                     }
                 }
+
 
             } catch (error) {
                 return {

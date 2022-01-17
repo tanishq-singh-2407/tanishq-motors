@@ -21,29 +21,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const verified: verifyTokenReturn = verifyToken(token as string);
 
     if (!verified.success)
-        return res.status(300).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+        return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     switch (req.method) {
         case "GET": // get invoice
+
             const invoiceNumber: number = parseInt(req.headers["invoice-number"] as string) || -1;
 
-            if (invoiceNumber === -1) return res.status(300).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not found, (set in header)." }] })
+            if (invoiceNumber === -1) return res.status(200).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not found, (set in header)." }] })
 
             await connectToDB();
 
             await INVOICE.find({
                 user: verified.data?._id,
-                invoiceNo: invoiceNumber
+                invoiceNumber: invoiceNumber
             })
                 .then(result => res.status(200).json({ error: false, data: result }))
-                .catch(err_ => res.status(300).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }));
+                .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown", message: err_.message }] }));
 
             break;
 
         case "POST": // create new invoice
-            const data: Invoice = req.body;
+            const data: Invoice = req.body.data;
 
-            if (!data) return res.status(300).json({ error: true, message: [{ operation: "invoice-data", message: "invoice data not given" }] })
+            if (!data) return res.status(200).json({ error: true, message: [{ operation: "invoice-data", message: "invoice data not given" }] })
 
             data.user = verified.data?._id;
 
@@ -55,52 +56,48 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
                 })
                 .catch(err_ => {
                     if (err_.code === 11000)
-                        return res.status(300).json({ error: true, message: [{ operation: "duplicate-invoice", message: "Purchase with this invoice number already exists" }] })
+                        return res.status(200).json({ error: true, message: [{ operation: "duplicate-invoice", message: "Purchase with this invoice number already exists" }] })
 
-                    return res.status(300).json({ error: true, message: [{ operation: "unknown", message: err_._message }] })
+                    return res.status(200).json({ error: true, message: [{ operation: "unknown", message: err_._message }] })
                 });
 
             break;
 
         case "PUT": // update old invoice
-            const invoiceNumberForUpdatation: number = req.body['invoice-number'];
+            const invoiceNumberForUpdatation: number = parseInt(req.headers['invoice-number'] as string);
             const updatedInvoice: UpdateInvoice = req.body['updated-invoice'];
 
-            if (!invoiceNumberForUpdatation) return res.status(300).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not given" }] })
+            if (!invoiceNumberForUpdatation || invoiceNumberForUpdatation === -1) return res.status(200).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not given" }] })
 
             await connectToDB();
 
-            await INVOICE.findOneAndUpdate({ user: verified.data?._id, invoiceNo: invoiceNumberForUpdatation }, updatedInvoice)
-                .then(async () => {
-                    await INVOICE.find({ user: verified.data?._id, invoiceNo: invoiceNumberForUpdatation })
-                        .then(result => res.status(200).json({ error: false, data: result }))
-                        .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }));
-                })
+            await INVOICE.findOneAndUpdate({ user: verified.data?._id, invoiceNumber: invoiceNumberForUpdatation }, updatedInvoice)
+                .then(() => res.status(200).json({ error: false }))
                 .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }));
 
             break;
 
         case "DELETE": // delete old invoice
             const invoiceNumberForDeletion: number = parseInt(req.headers['invoice-number'] as string);
-            if (!invoiceNumberForDeletion) return res.status(300).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not given, set as header(invoice-number)" }] })
+            if (!invoiceNumberForDeletion || invoiceNumberForDeletion === -1) return res.status(200).json({ error: true, message: [{ operation: "invoice-number", message: "invoice number not given, set as header(invoice-number)" }] })
 
             await connectToDB();
 
-            await INVOICE.findOneAndDelete({ user: verified.data?._id, invoiceNo: invoiceNumberForDeletion })
+            await INVOICE.findOneAndDelete({ user: verified.data?._id, invoiceNumber: invoiceNumberForDeletion })
                 .then(() => res.status(200).json({ error: false, data: "deleted" }))
                 .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown", message: err_.code }] }))
 
             break;
 
         default:
-            res.status(300).json({ error: true, message: [{ operation: "unsupported", message: `Method (${req.method as string}) is not supported.` }] });
+            res.status(200).json({ error: true, message: [{ operation: "unsupported", message: `Method (${req.method as string}) is not supported.` }] });
     }
 }
 
 export default handler;
 
 // const dummyData: Invoice = {
-    // "invoiceNo": 1,
+    // "invoiceNumber": 1,
     // "hypothecation": "SBI BANK",
     // "nameOfBuyer": "buyers name",
     // "addressOfBuyer": "address of buyer",

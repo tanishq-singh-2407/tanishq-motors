@@ -15,7 +15,7 @@ const Home: NextPage<{ data: user }> = ({ data }) => {
   const cookies = new Cookies();
 
   return (
-    <div className="h-screen w-screen flex justify-start items-center flex-col">
+    <div className="h-screen w-screen flex justify-start items-center flex-col bg-slate-100">
 
       <Head>
         <title>Tanishq Motors</title>

@@ -10,20 +10,20 @@ export interface Items {
     itemName: String;
     quantity: Number;
     amount: Number;
-    hirePurchase_or_Lease_or_hypothecationWith?: String;
+    EngineNumber: Number;
+    numberOfBatteries?: Number;
+    unladenWeight: Number;
+    maximAxleWeight: MaximAxleWeight;
+    grossVehicleWeight: Number;
+    controllerNumber: Number;
     classOfVechile?: String;
     makersName?: String;
     chassisNo: String;
-    EngineNumber: Number;
     hoursePower: String;
     fuelUsed?: String;
-    numberOfBatteries?: Number;
     yearOfManufacture: String;
     seatingCapacity: String;
-    unladenWeight: Number;
-    maximAxleWeight: MaximAxleWeight;
     bodyColor: String;
-    grossVehicleWeight: Number;
     typeOfBody?: String;
     bharatStage?: String;
     tradeCertificateNumber?: String;
@@ -32,22 +32,31 @@ export interface Items {
 }
 
 export interface UpdateInvoice {
-    hypothecation?: String;
-    addressOfBuyer?: String;
-    mobileNoOfBuyer?: Number;
-    deleveredOn?: Date;
+    phoneNumber?: number;
+    streetAddress: string;
+    city: string;
+    state: string;
+    postalCode?: number;
+    deliveryDate: Date;
 }
 
 export type Invoice = {
     _id?: string;
     user?: string;
-    invoiceNo: Number;
-    hypothecation: String;
-    date?: Date;
-    nameOfBuyer: String;
-    addressOfBuyer: String;
-    mobileNoOfBuyer: Number;
+    buyersName: string;
+    invoiceNumber?: number;
+    fatherName: string;
+    motherName: string;
+    phoneNumber?: number;
+    aadharNumber?: number;
+    date: Date;
+    deliveryDate: Date;
+    hypothecation: string;
+    hirePurchase_Lease_Hypothecation: string;
+    streetAddress: string;
+    city: string;
+    state: string;
+    postalCode?: number;
     description: String;
     items: Array<Items>;
-    deleveredOn?: Date;
 };
