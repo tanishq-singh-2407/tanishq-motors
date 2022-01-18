@@ -1,13 +1,13 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import Spinner from '../../components/spinner';
-import SideBar from '../../components/sidebar';
+import Spinner from '../../../components/spinner';
+import SideBar from '../../../components/sidebar';
 import { useState } from 'react';
 import axios from 'axios';
-import verifyToken from '../../lib/verifyToken';
+import verifyToken from '../../../lib/verifyToken';
 import Cookies from 'universal-cookie';
-import type { Invoice } from '../../lib/invoice';
-import InvoiceRes from '../../components/invoiceRes';
+import type { Invoice } from '../../../lib/invoice';
+import InvoiceRes from '../../../components/invoiceRes';
 
 interface user {
     _id: string;
@@ -16,13 +16,12 @@ interface user {
     iat?: number;
 }
 
-const Search: NextPage<{ user: user }> = ({ user }) => {
+const Search: NextPage<{ user: user, invoiceData: Invoice }> = ({ user, invoiceData }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [invoiceNumber, setInvoiceNumber] = useState<number>();
     const [isFought, setIsFought] = useState<boolean>(false);
     const [invoice, setInvoice] = useState<Invoice>();
     const cookies = new Cookies();
-
 
     const search = async (): Promise<void> => {
         if (!invoiceNumber) return alert("Enter invoice");
@@ -71,8 +70,8 @@ const Search: NextPage<{ user: user }> = ({ user }) => {
 
             <main className='h-full w-full bg-slate-100'>
                 {
-                    isFought ?
-                        <InvoiceRes invoice={invoice!} setIsFought={setIsFought} /> :
+                    isFought || invoiceData !== undefined ?
+                        <InvoiceRes invoice={invoiceData !== undefined ? invoiceData : invoice!} operation='search' setIsFought={setIsFought} /> :
                         <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 min-w-full">
                             <div className="max-w-md w-full space-y-8">
                                 <section className="mt-8 space-y-6">
@@ -115,7 +114,7 @@ const Search: NextPage<{ user: user }> = ({ user }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
     const { cookies } = req;
     const token: string = cookies["auth-token"];
 
@@ -123,9 +122,40 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         const { success, data } = verifyToken(token);
 
         if (success) {
+            try {
+                if (query.invoice_number) {
+                    const response = await axios({
+                        method: "GET",
+                        url: `${process.env.NEXT_PUBLIC_API}/api/invoice`,
+                        headers: {
+                            "auth-token": token,
+                            "invoice-number": query.invoice_number as string
+                        }
+                    });
+
+                    const resData = response.data;
+
+                    if (!resData.error) {
+                        const invoice_: Invoice = resData.data[0];
+
+                        if (invoice_ !== undefined) {
+                            return {
+                                props: {
+                                    user: data,
+                                    invoiceData: invoice_
+                                }
+                            }
+                        }
+
+                    }
+                }
+            } catch (error) {
+            }
+
             return {
                 props: {
-                    user: data
+                    user: data,
+
                 }
             }
         }

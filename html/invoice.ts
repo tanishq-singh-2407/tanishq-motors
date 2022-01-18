@@ -1,7 +1,17 @@
 import type { Invoice } from '../lib/invoice';
-
+import { ToWords } from 'to-words';
 
 module.exports = (invoice: Invoice) => {
+    const toWords = new ToWords({
+        localeCode: 'en-IN',
+        converterOptions: {
+            currency: true,
+            ignoreDecimal: false,
+            ignoreZeroCurrency: false,
+            doNotAddOnly: false,
+        }
+    })
+
     const createItem = (): { totalQuantity: number; totalAmount: number; data: string; data2: string; } => {
         var data: string = "";
         var totalAmount: number = 0;
@@ -12,7 +22,7 @@ module.exports = (invoice: Invoice) => {
             data += `
                 <TR>
                         <TD colspan=3 class="tr6 td37">
-                            <P class="p5 ft4">4${serialNumber}. ${itemName}</P>
+                            <P class="p5 ft4">4${serialNumber || ""}. ${itemName || ""}</P>
                         </TD>
                         <TD class="tr6 td1">
                             <P class="p6 ft5">&nbsp;</P>
@@ -24,13 +34,13 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft5">&ensp;</P>
                         </TD>
                         <TD class="tr6 td3">
-                            <P class="p8 ft12">${quantity}</P>
+                            <P class="p8 ft12">${quantity || ""}</P>
                         </TD>
                         <TD class="tr6 td39">
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD colspan=2 class="tr6 td40">
-                            <P class="p8 ft12">${amount}</P>
+                            <P class="p8 ft12">${amount || ""}</P>
                         </TD>
                     </TR>
             `;
@@ -38,22 +48,22 @@ module.exports = (invoice: Invoice) => {
             data2 += `
                 <TR>
                         <TD class="tr11 td52">
-                            <P class="p5 ft16">${serialNumber}</P>
+                            <P class="p5 ft16">${serialNumber || ""}</P>
                         </TD>
                         <TD class="tr11 td46">
                             <P class="p6 ft15">&nbsp;</P>
                         </TD>
                         <TD class="tr11 td53">
-                            <P class="p6 ft16">${chassisNo}</P>
+                            <P class="p6 ft16">${chassisNo || ""}</P>
                         </TD>
                         <TD colspan=2 class="tr11 td17">
-                            <P class="p8 ft16">${EngineNumber}</P>
+                            <P class="p8 ft16">${EngineNumber || ""}</P>
                         </TD>
                         <TD class="tr11 td54">
                             <P class="p6 ft15">&nbsp;</P>
                         </TD>
                         <TD colspan=2 class="tr11 td51">
-                            <P class="p8 ft16">${bodyColor}</P>
+                            <P class="p8 ft16">${bodyColor || ""}</P>
                         </TD>
                         <TD class="tr11 td33">
                             <P class="p6 ft15">&nbsp;</P>
@@ -62,7 +72,7 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft15">&nbsp;</P>
                         </TD>
                         <TD class="tr11 td35">
-                            <P class="p8 ft16">forgot</P>
+                            <P class="p8 ft16">${invoice.items[Number(serialNumber) - 1].controllerNumber || ""}</P>
                         </TD>
                     </TR>
             `
@@ -195,13 +205,11 @@ module.exports = (invoice: Invoice) => {
 
                 .ft11 {
                     font: 18px 'Calibri';
-                    text-decoration: underline;
                     line-height: 22px;
                 }
 
                 .ft12 {
                     font: 19px 'Calibri';
-                    text-decoration: underline;
                     line-height: 23px;
                 }
 
@@ -899,7 +907,7 @@ module.exports = (invoice: Invoice) => {
                 <TABLE cellpadding=0 cellspacing=0 class="t0">
                     <TR>
                         <TD colspan=3 rowspan=2 class="tr0 td0">
-                            <P class="p5 ft4">Invoice No - ${invoice.invoiceNo}</P>
+                            <P class="p5 ft4">Invoice No - ${invoice.invoiceNumber || ""}</P>
                         </TD>
                         <TD class="tr1 td1">
                             <P class="p6 ft5">&nbsp;</P>
@@ -911,7 +919,7 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD colspan=3 rowspan=2 class="tr0 td4">
-                            <P class="p6 ft4">Date - ${invoice.date?.toDateString()}</P>
+                            <P class="p6 ft4">Date - ${invoice.date?.toDateString() || ""}</P>
                         </TD>
                     </TR>
                     <TR>
@@ -936,7 +944,7 @@ module.exports = (invoice: Invoice) => {
                     </TR>
                     <TR>
                         <TD colspan=5 class="tr3 td9">
-                            <P class="p5 ft4">Hypothecation : ${invoice.hypothecation}</P>
+                            <P class="p5 ft4">Hypothecation : ${invoice.hypothecation || ""}</P>
                         </TD>
                         <TD class="tr3 td10">
                             <P class="p6 ft5">&nbsp;</P>
@@ -991,7 +999,7 @@ module.exports = (invoice: Invoice) => {
                     </TR>
                     <TR>
                         <TD colspan=5 class="tr5 td24">
-                            <P class="p5 ft4">${invoice.nameOfBuyer},</P>
+                            <P class="p5 ft4">${invoice.buyersName || ""},</P>
                         </TD>
                         <TD class="tr5 td10">
                             <P class="p6 ft5">&nbsp;</P>
@@ -1008,7 +1016,7 @@ module.exports = (invoice: Invoice) => {
                     </TR>
                     <TR>
                         <TD colspan=8 class="tr4 td27">
-                            <P class="p5 ft8">${invoice.addressOfBuyer}</P>
+                            <P class="p5 ft8">${invoice.postalCode}, ${invoice.streetAddress}, ${invoice.city}, (${invoice.state})</P>
                         </TD>
                         <TD class="tr4 td3">
                             <P class="p6 ft7">&nbsp;</P>
@@ -1025,7 +1033,7 @@ module.exports = (invoice: Invoice) => {
                     </TR>
                     <TR>
                         <TD colspan=3 class="tr5 td29">
-                            <P class="p5 ft4">Mob - ${invoice.mobileNoOfBuyer}</P>
+                            <P class="p5 ft4">Mob - ${invoice.phoneNumber || ""}</P>
                         </TD>
                         <TD class="tr5 td30">
                             <P class="p6 ft5">&nbsp;</P>
@@ -1119,7 +1127,7 @@ module.exports = (invoice: Invoice) => {
                     <TR>
                         <TD colspan=8 class="tr5 td27">
                             <P class="p5 ft4">
-                                ${invoice.description}    
+                                ${invoice.description || ""}    
                             </P>
                         </TD>
                         <TD class="tr5 td3">
@@ -1200,7 +1208,7 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD colspan=2 class="tr3 td40">
-                            <P class="p8 ft12">${2.5 / 100 * totalAmount}</P>
+                            <P class="p8 ft12">${(2.5 / 100 * totalAmount) || ""}</P>
                         </TD>
                     </TR>
                     <TR>
@@ -1229,7 +1237,7 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD colspan=2 class="tr3 td40">
-                            <P class="p8 ft12">${2.5 / 100 * totalAmount}</P>
+                            <P class="p8 ft12">${(2.5 / 100 * totalAmount) || ""}</P>
                         </TD>
                     </TR>
                     <TR>
@@ -1331,18 +1339,18 @@ module.exports = (invoice: Invoice) => {
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD class="tr5 td33">
-                            <P class="p8 ft4">${totalQuantity}</P>
+                            <P class="p8 ft4">${totalQuantity || ""}</P>
                         </TD>
                         <TD class="tr5 td36">
                             <P class="p6 ft5">&nbsp;</P>
                         </TD>
                         <TD colspan=2 class="tr5 td49">
-                            <P class="p8 ft4">${(2.5 / 100 * totalAmount * 2) + totalAmount}/-</P>
+                            <P class="p8 ft4">${((2.5 / 100 * totalAmount * 2) + totalAmount) || ""}/-</P>
                         </TD>
                     </TR>
                     <TR>
                         <TD colspan=12 class="tr4 td50">
-                            <P class="p5 ft8">Rupees in words : </P>
+                            <P class="p5 ft8">Rupees in words : ${toWords.convert(((2.5 / 100 * totalAmount * 2) + totalAmount))}</P>
                         </TD>
                     </TR>
                     <TR>

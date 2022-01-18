@@ -31,24 +31,19 @@ type Resourses = {
 const solutions: Array<Solutions> = [
     {
         name: 'Create New Invoice',
-        href: '#',
+        href: '/invoice/acv/create',
         icon: ChartBarIcon,
     },
     {
         name: 'Search Invoice',
-        href: '/invoice/search',
+        href: '/invoice/acv/search',
         icon: CursorClickIcon,
     },
     {
         name: 'Update Invoice',
-        href: '#',
+        href: '/invoice/acv/update',
         icon: ViewGridIcon,
-    },
-    {
-        name: 'Delete Invoice',
-        href: '#',
-        icon: RefreshIcon,
-    },
+    }
 ]
 const resources: Array<Resourses> = [
     {

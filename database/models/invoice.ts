@@ -12,10 +12,6 @@ const ItemsSchema = new Schema({
     itemName: String,
     quantity: Number,
     amount: Number,
-    hirePurchase_or_Lease_or_hypothecationWith: {
-        type: String,
-        default: "Na"
-    },
     classOfVechile: {
         type: String,
         default: 'ELECTRIC VEHICLE'
@@ -24,6 +20,7 @@ const ItemsSchema = new Schema({
         type: String,
         default: 'M/S CHAMPION POLY PLAST'
     },
+    controllerNumber: Number,
     chassisNo: String,
     EngineNumber: Number,
     hoursePower: String,
@@ -68,7 +65,7 @@ const InvoiceSchema: Schema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Users'
     },
-    invoiceNo: {
+    invoiceNumber: {
         type: Number,
         unique: true,
         required: true
@@ -80,15 +77,23 @@ const InvoiceSchema: Schema = new Schema({
         type: Date,
         default: Date.now
     },
-    nameOfBuyer: String,
-    addressOfBuyer: String,
-    mobileNoOfBuyer: Number,
+    buyersName: String,
+    streetAddress: String,
+    city: String,
+    state: String,
+    postalCode: Number,
+    phoneNumber: Number,
     description: String,
     items: [ItemsSchema],
-    deleveredOn: {
+    deliveryDate: {
         type: Date,
         default: Date.now
-    }
+    },
+    controllerNumber: Number,
+    fatherName: String,
+    motherName: String,
+    aadharNumber: Number,
+    hirePurchase_Lease_Hypothecation: String
 });
 
 const ITEMS = models.Items || model('Items', ItemsSchema);

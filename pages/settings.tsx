@@ -2,9 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import SideBar from '../components/sidebar';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import isEmail from 'validator/lib/isEmail';
-import axios from 'axios';
+import { useState } from 'react';
 import Cookies from 'universal-cookie';
 import verifyToken from '../lib/verifyToken';
 

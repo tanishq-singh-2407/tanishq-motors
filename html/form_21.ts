@@ -295,9 +295,9 @@ module.exports = (invoice: Invoice, item: number) => {
                 <P class="p5 ft2">(Brand name of the vehicle)</P>
                 <P class="p6 ft0">Has been delivered us to on -<SPAN
                         class="ft2"> ${invoice.date?.toDateString()} </SPAN></P>
-                <P class="p7 ft0">Name of the buyer -<SPAN class="ft4">${invoice.nameOfBuyer}</SPAN></P>
-                <P class="p8 ft4"><SPAN class="ft0">Address </SPAN><SPAN class="ft2">- </SPAN>${invoice.addressOfBuyer}</P>
-                <P class="p9 ft2">The vehicle is held under agreement of Hire purchase/lease/hypothecation with - ${invoice.items[item].hirePurchase_or_Lease_or_hypothecationWith}</P>
+                <P class="p7 ft0">Name of the buyer -<SPAN class="ft4">${invoice.buyersName}</SPAN></P>
+                <P class="p8 ft4"><SPAN class="ft0">Address </SPAN><SPAN class="ft2">- </SPAN>${invoice.postalCode}, ${invoice.streetAddress}, ${invoice.city}, (${invoice.state})</P>
+                <P class="p9 ft2">The vehicle is held under agreement of Hire purchase/lease/hypothecation with - ${invoice.hirePurchase_Lease_Hypothecation}</P>
                 <P class="p10 ft2">The details of the vehicles are given below</P>
                 <TABLE cellpadding=0 cellspacing=0 class="t0">
                     <TR>
