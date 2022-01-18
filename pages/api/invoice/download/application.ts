@@ -12,12 +12,6 @@ interface error {
     message: string;
 }
 
-type Data = {
-    error: boolean;
-    message?: Array<error>;
-    data?: any;
-}
-
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const { cookies, query } = req;
     const token: string = cookies["auth-token"];
@@ -38,16 +32,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                     if (result === null)
                         return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not valid" }] })
 
-
-                    pdf.create(
-                        application(result),
-                        {
+                    try {
+                        const html = application(result);
+                        pdf.create(
+                            html, {
                             format: "A4"
                         }
-                    ).toStream((err, stream) => {
-                        res.setHeader("Content-Type", "application/pdf");
-                        stream.pipe(res)
-                    })
+                        ).toStream((err, stream) => {
+                            res.setHeader("Content-Type", "application/pdf");
+                            stream.pipe(res);
+                            return res.end();
+                        })
+                    } catch (error) {
+                        res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: error }] })
+                    }
 
                     // return res.status(200).json({ error: false, data: result })
                 })
