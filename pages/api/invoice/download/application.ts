@@ -13,12 +13,23 @@ interface error {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
-    const { query } = req;
-    const token: string = query.token as string;
-    const verified: boolean = verifyPublicToken(token);
+    const { query, headers } = req;
+    var token: string;
 
-    if (!verified)
-        return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+    if (headers["auth-token"] !== undefined) {
+        token = headers["auth-token"] as string;
+        const verified: verifyTokenReturn = verifyToken(token);
+
+        if (!verified.success)
+            return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+    } else {
+        token = query.token as string;
+        const verified: boolean = verifyPublicToken(token);
+
+        if (!verified)
+            return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+    }
+
 
     if (query._id === undefined)
         return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not defined" }] })
@@ -38,10 +49,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             html, {
                             format: "A4"
                         }
-                        ).toStream((err, stream) => {
+                            // ).toStream((err, stream) => {
+                            //     res.setHeader("Content-Type", "application/pdf");
+                            //     stream.pipe(res);
+                            // });
+                        ).toBuffer((err, buffer) => {
                             res.setHeader("Content-Type", "application/pdf");
-                            stream.pipe(res);
-                        });
+                            res.send(buffer)
+                        })
                     })
                     .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
             } catch (error) {
