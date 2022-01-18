@@ -1,10 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import verifyToken, { verifyPublicToken } from '../../../../lib/verifyToken';
+import verifyToken from '../../../../lib/verifyToken';
 import type { verifyTokenReturn } from '../../../../lib/verifyToken';
 import { INVOICE } from '../../../../database/models/invoice';
 import connectToDB from '../../../../database/db';
-import pdf from 'html-pdf';
-
 const application = require('../../../../html/invoice');
 
 interface error {
@@ -13,12 +11,14 @@ interface error {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
-    const { query } = req;
-    const token: string = query.token as string;
-    const verified: boolean = verifyPublicToken(token);
+    const { query, headers } = req;
+    const token: string = headers["auth-token"] as string || "";
 
-    if (!verified)
+    const verified: verifyTokenReturn = verifyToken(token);
+
+    if (!verified.success)
         return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
+
 
     if (query._id === undefined)
         return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not defined" }] })
@@ -34,14 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not valid" }] })
 
                         const html = application(result);
-                        pdf.create(
-                            html, {
-                            format: "A4"
-                        }
-                        ).toStream((err, stream) => {
-                            res.setHeader("Content-Type", "application/pdf");
-                            stream.pipe(res);
-                        });
+                        res.status(200).json({ error: false, html })
                     })
                     .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
             } catch (error) {

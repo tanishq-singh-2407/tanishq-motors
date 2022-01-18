@@ -9,7 +9,6 @@ import Cookies from "universal-cookie";
 import { Invoice, UpdateInvoice } from "../lib/invoice";
 import Alert from "./alert";
 import Spinner from "./spinner";
-import { verifyPublicToken } from "../lib/verifyToken";
 import { sign } from "jsonwebtoken";
 
 const updateSchema = Joi.object({
@@ -20,14 +19,6 @@ const updateSchema = Joi.object({
     phoneNumber: Joi.number().integer().positive().required(),
     postalCode: Joi.number().integer().positive().required()
 });
-
-const generatePublicToken = (): string => {
-    return sign({
-        access: "limited"
-    }, process.env.NEXT_PUBLIC_JWT_ACCESS as string, {
-        expiresIn: "1h"
-    });
-}
 
 const InvoiceRes: NextPage<{ invoice: Invoice; operation: "search" | "update" | "create" | "delete"; setIsFought: Function; }> = ({ invoice, operation, setIsFought }) => {
     const [deleteAlert, setDeleteAlert] = useState<boolean>(false);
@@ -253,7 +244,7 @@ const InvoiceRes: NextPage<{ invoice: Invoice; operation: "search" | "update" | 
                                             <span className="ml-2 flex-1 w-0 truncate">invoice.pdf</span>
                                         </div>
                                         <div className="ml-4 flex-shrink-0">
-                                            <a href={`${process.env.NEXT_PUBLIC_API}/api/invoice/download/application?_id=${invoice._id}&token=${generatePublicToken()}`} target="_blank" rel="noreferrer" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                            <a href={`/invoice/watch?_id=${invoice._id}&type=invoice&invoice_number=${invoice.invoiceNumber}`} target="_blank" rel="noreferrer" className="font-medium text-indigo-600 hover:text-indigo-500">
                                                 Download
                                             </a>
                                         </div>
@@ -265,7 +256,7 @@ const InvoiceRes: NextPage<{ invoice: Invoice; operation: "search" | "update" | 
                                                     <span className="ml-2 flex-1 w-0 truncate">{itemName}_Form_21.pdf</span>
                                                 </div>
                                                 <div className="ml-4 flex-shrink-0">
-                                                    <a href={`${process.env.NEXT_PUBLIC_API}/api/invoice/download/form21?_id=${invoice._id}&item=${index}&token=${generatePublicToken()}`} target="_blank" rel="noreferrer" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                                    <a href={`/invoice/watch?_id=${invoice._id}&item=${index}&type=form21&invoice_number=${invoice.invoiceNumber}`} target="_blank" rel="noreferrer" className="font-medium text-indigo-600 hover:text-indigo-500">
                                                         Download
                                                     </a>
                                                 </div>

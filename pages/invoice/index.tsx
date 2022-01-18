@@ -1,10 +1,7 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import SideBar from '../../components/sidebar';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import verifyToken from '../../lib/verifyToken';
 import type { Invoice } from '../../lib/invoice';
 
@@ -16,12 +13,6 @@ interface user {
 }
 
 const Login: NextPage<{ user: user; invoices: Array<Invoice> }> = ({ user, invoices }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const cookies = new Cookies();
-    const Router = useRouter();
-
-    console.log({ user, invoices });
-
     return (
         <div className="h-screen w-screen flex justify-start items-center flex-col">
 

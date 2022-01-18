@@ -1,6 +1,5 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import Cookies from 'universal-cookie';
 import verifyToken from '../lib/verifyToken';
 import SideBar from '../components/sidebar';
 
@@ -12,8 +11,6 @@ interface user {
 }
 
 const Home: NextPage<{ data: user }> = ({ data }) => {
-  const cookies = new Cookies();
-
   return (
     <div className="h-screen w-screen flex justify-start items-center flex-col bg-slate-100">
 

@@ -1,16 +1,9 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import SideBar from '../../components/sidebar';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import Cookies from 'universal-cookie';
 import verifyToken from '../../lib/verifyToken';
 
 const Calendar: NextPage = () => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const cookies = new Cookies();
-    const Router = useRouter();
-
     return (
         <div className="h-screen w-screen flex justify-start items-center flex-col">
 
