@@ -43,6 +43,9 @@ const InvoiceRes: NextPage<{ invoice: Invoice; operation: "search" | "update" | 
     const Router = useRouter();
     const cookies = new Cookies();
 
+    console.log({ invoice });
+
+
     return (
         <div className='min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 min-w-full flex-col'>
             <div className="min-h-full w-full bg-white shadow-lg overflow-hidden sm:rounded-lg">

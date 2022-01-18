@@ -4,6 +4,7 @@ import type { verifyTokenReturn } from '../../../../lib/verifyToken';
 import { INVOICE } from '../../../../database/models/invoice';
 import connectToDB from '../../../../database/db';
 import pdf from 'html-pdf';
+import { escape } from 'querystring';
 
 const application = require('../../../../html/invoice');
 
@@ -48,15 +49,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                         pdf.create(
                             html, {
                             format: "A4"
-                        }
-                            // ).toStream((err, stream) => {
-                            //     res.setHeader("Content-Type", "application/pdf");
-                            //     stream.pipe(res);
-                            // });
-                        ).toBuffer((err, buffer) => {
+                        }).toStream((err, stream) => {
                             res.setHeader("Content-Type", "application/pdf");
-                            res.send(buffer)
-                        })
+                            stream.pipe(res);
+                        });
                     })
                     .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
             } catch (error) {
