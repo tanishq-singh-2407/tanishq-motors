@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import verifyToken from '../../../../lib/verifyToken';
+import verifyToken, { verifyPublicToken } from '../../../../lib/verifyToken';
 import type { verifyTokenReturn } from '../../../../lib/verifyToken';
 import { INVOICE } from '../../../../database/models/invoice';
 import connectToDB from '../../../../database/db';
@@ -13,11 +13,11 @@ interface error {
 }
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
-    const { cookies, query } = req;
-    const token: string = cookies["auth-token"];
-    const verified: verifyTokenReturn = verifyToken(token);
+    const { query } = req;
+    const token: string = query.token as string;
+    const verified: boolean = verifyPublicToken(token);
 
-    if (!verified.success)
+    if (!verified)
         return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     if (query._id === undefined)
@@ -39,9 +39,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             format: "A4"
                         }
                         ).toStream((err, stream) => {
-                            // res.setHeader("Content-Type", "application/pdf");
+                            res.setHeader("Content-Type", "application/pdf");
                             stream.pipe(res);
-                            // return res.end();
                         })
 
                         // return res.status(200).json({ error: false, data: result })
