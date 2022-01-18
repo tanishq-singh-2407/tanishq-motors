@@ -18,11 +18,11 @@ module.exports = (invoice: Invoice) => {
         var totalQuantity: number = 0;
         var data2: string = "";
 
-        invoice.items.map(({ serialNumber, itemName, quantity, amount, chassisNo, EngineNumber, bodyColor, }) => {
+        invoice.items.map(({ serialNumber, itemName, quantity, amount, chassisNo, EngineNumber, bodyColor }) => {
             data += `
                 <TR>
                         <TD colspan=3 class="tr6 td37">
-                            <P class="p5 ft4">4${serialNumber || ""}. ${itemName || ""}</P>
+                            <P class="p5 ft4">${serialNumber || ""}. ${itemName || ""}</P>
                         </TD>
                         <TD class="tr6 td1">
                             <P class="p6 ft5">&nbsp;</P>
@@ -101,12 +101,14 @@ module.exports = (invoice: Invoice) => {
                 body {
                     margin: 0px;
                     padding: 0;
+                    display: flex;
+                    position: relative;
                 }
 
                 #page_1 {
-                    position: relative;
+                    position: absolute;
                     overflow: hidden;
-                    margin: 140px 0 0 140px;
+                    margin: 10% 15%;
                     padding: 0px;
                 }
 

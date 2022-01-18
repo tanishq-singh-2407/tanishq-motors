@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import verifyToken from '../../../../lib/verifyToken';
+import verifyToken, { verifyPublicToken } from '../../../../lib/verifyToken';
 import type { verifyTokenReturn } from '../../../../lib/verifyToken';
-import INVOICE from '../../../../database/models/invoice';
+import { INVOICE } from '../../../../database/models/invoice';
 import connectToDB from '../../../../database/db';
 import pdf from 'html-pdf';
 
@@ -12,18 +12,12 @@ interface error {
     message: string;
 }
 
-type Data = {
-    error: boolean;
-    message?: Array<error>;
-    data?: any;
-}
-
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
-    const { cookies, query } = req;
-    const token: string = cookies["auth-token"];
-    const verified: verifyTokenReturn = verifyToken(token);
+    const { query } = req;
+    const token: string = query.token as string;
+    const verified: boolean = verifyPublicToken(token);
 
-    if (!verified.success)
+    if (!verified)
         return res.status(200).json({ error: true, message: [{ operation: "not-authenticated", message: "user not authenticated" }] })
 
     if (query._id === undefined)
@@ -31,27 +25,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     switch (req.method) {
         case "GET":
-            await connectToDB();
+            try {
+                await connectToDB();
 
-            await INVOICE.findById(query._id)
-                .then(result => {
-                    if (result === null)
-                        return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not valid" }] })
+                await INVOICE.findById(query._id)
+                    .then(result => {
+                        if (result === null)
+                            return res.status(200).json({ error: true, message: [{ operation: "_id", message: "_id not valid" }] })
 
-
-                    pdf.create(
-                        application(result),
-                        {
+                        const html = application(result);
+                        pdf.create(
+                            html, {
                             format: "A4"
                         }
-                    ).toStream((err, stream) => {
-                        res.setHeader("Content-Type", "application/pdf");
-                        stream.pipe(res)
-                    })
+                        ).toStream((err, stream) => {
+                            res.setHeader("Content-Type", "application/pdf");
+                            stream.pipe(res);
+                        })
 
-                    // return res.status(200).json({ error: false, data: result })
-                })
-                .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
+                        // return res.status(200).json({ error: false, data: result })
+                    })
+                    .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
+            } catch (error) {
+                res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: error }] })
+            }
 
             break;
 
