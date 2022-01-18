@@ -30,18 +30,4 @@ const verifyToken = (token: string): verifyTokenReturn => {
     }
 }
 
-const verifyPublicToken = (token: string): boolean => {
-    try {
-        verify(token, process.env.NEXT_PUBLIC_JWT_ACCESS as string);
-
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
-
 export default verifyToken;
-export {
-    verifyPublicToken,
-    verifyToken
-}

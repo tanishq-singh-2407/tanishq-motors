@@ -1,25 +1,9 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import SideBar from '../../components/sidebar';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 import verifyToken from '../../lib/verifyToken';
-import type { Invoice } from '../../lib/invoice';
 
-interface user {
-    _id: string;
-    name: string;
-    email: string;
-    iat?: number;
-}
-
-const Watch: NextPage<{ user: user; pdf?: any }> = ({ user, pdf }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const cookies = new Cookies();
-    const Router = useRouter();
-
+const Watch: NextPage<{ pdf?: Buffer }> = ({ pdf }) => {
     return (
         <div className="h-screen w-screen flex justify-start items-center flex-col">
 
@@ -27,8 +11,6 @@ const Watch: NextPage<{ user: user; pdf?: any }> = ({ user, pdf }) => {
                 <title>Tanishq Motors</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
-            <SideBar />
 
             <main className='h-full w-full'>
                 <embed className="form-control h-full w-full" src={`data:application/pdf;base64,${pdf}`} id="pdf" />
@@ -42,35 +24,92 @@ export const getServerSideProps: GetServerSideProps = async ({ req, query }) => 
     const { cookies } = req;
     const token: string = cookies["auth-token"] as string;
 
+    const convertToPdfBuffer = async (html: string): Promise<{ error: boolean; data?: any; }> => {
+        try {
+            const response = await axios({
+                method: "POST",
+                url: `${process.env.AWS_API}/create-pdf`,
+                data: {
+                    html
+                }
+            });
+
+            const { data } = response;
+
+            return { error: false, data }
+
+        } catch (error) {
+            return { error: true }
+        }
+    }
+
     if (token !== undefined) { // check auth-token
         const { success, data } = verifyToken(token);
 
         if (success) { // send latest 5 purchases
 
             try {
-                const response = await axios({
-                    method: "GET",
-                    url: `http://localhost:3000/api/invoice/download/application?_id=61e57f2dd5dfca3db5843510&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJsaW1pdGVkIiwiaWF0IjoxNjQyNDkxNjY4LCJleHAiOjE2NDI0OTUyNjh9.sb2Z_QCMXK2Hs6QQaV1aeJ0-8XLkdUTlbHAX9dIF1DU`,
-                });
 
-                const resData = response.data;
-                const pdf: any = resData;
+                const { _id, item, type } = query;
 
-                if (!resData.error) {
+                if (_id === undefined) throw "";
+
+
+                if (type === "invoice") {
+                    const response = await axios({
+                        method: "GET",
+                        url: `${process.env.NEXT_PUBLIC_API}/api/invoice/download/application?_id=${_id}`,
+                        headers: {
+                            "auth-token": token
+                        }
+                    });
+
+                    const { data } = response;
+                    const { error, html } = data;
+
+                    if (error) throw "";
+
+                    const pdfResponse = await convertToPdfBuffer(html);
+
+                    if (pdfResponse.error) throw "";
+
                     return {
                         props: {
-                            user: data,
-                            pdf
+                            pdf: pdfResponse.data
                         }
                     }
-                }
+
+                } else if (type === "form21" && item !== undefined) {
+                    const response = await axios({
+                        method: "GET",
+                        url: `${process.env.NEXT_PUBLIC_API}/api/invoice/download/form21?_id=${_id}&item=${item}`,
+                        headers: {
+                            "auth-token": token
+                        }
+                    });
+
+                    const { data } = response;
+                    const { error, html } = data;
+
+                    if (error) throw "";
+
+                    const pdfResponse = await convertToPdfBuffer(html);
+
+                    if (pdfResponse.error) throw "";
+
+                    return {
+                        props: {
+                            pdf: pdfResponse.data
+                        }
+                    }
+                } else throw "";
 
 
             } catch (error) {
                 return {
                     props: {},
                     redirect: {
-                        destination: "/",
+                        destination: query.invoice_number ? `/invoice/acv/search?invoice_number=${query.invoice_number}` : `/invoice/acv/search`,
                         permanent: false
                     }
                 }
