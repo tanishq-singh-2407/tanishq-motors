@@ -41,9 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                         ).toStream((err, stream) => {
                             res.setHeader("Content-Type", "application/pdf");
                             stream.pipe(res);
-                        })
-
-                        // return res.status(200).json({ error: false, data: result })
+                        });
                     })
                     .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
             } catch (error) {
