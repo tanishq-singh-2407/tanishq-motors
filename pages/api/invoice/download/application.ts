@@ -38,17 +38,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             html, {
                             format: "A4"
                         }
-                            // ).toStream((err, stream) => {
-                            //     res.setHeader("Content-Type", "application/pdf");
-                            //     stream.pipe(res);
-                            // })
-                        ).toBuffer((err, buffer) => {
-                            // res.con("application/pdf");
+                        ).toStream((err, stream) => {
                             res.setHeader("Content-Type", "application/pdf");
-                            res.status(200).send(buffer);
-                        })
-
-                        // return res.status(200).json({ error: false, data: result })
+                            stream.pipe(res);
+                        });
                     })
                     .catch(err_ => res.status(200).json({ error: true, message: [{ operation: "unknown-error", message: err_.code }] }));
             } catch (error) {
