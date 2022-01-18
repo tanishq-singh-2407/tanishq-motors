@@ -25,9 +25,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
     switch (req.method) {
         case "GET":
-            await connectToDB();
-
             try {
+                await connectToDB();
+
                 await INVOICE.findById(query._id)
                     .then(result => {
                         if (result === null)
@@ -39,9 +39,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             format: "A4"
                         }
                         ).toStream((err, stream) => {
-                            res.setHeader("Content-Type", "application/pdf");
+                            // res.setHeader("Content-Type", "application/pdf");
                             stream.pipe(res);
-                            return res.end();
+                            // return res.end();
                         })
 
                         // return res.status(200).json({ error: false, data: result })
