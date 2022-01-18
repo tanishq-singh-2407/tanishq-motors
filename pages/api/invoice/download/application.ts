@@ -38,9 +38,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
                             html, {
                             format: "A4"
                         }
-                        ).toStream((err, stream) => {
+                            // ).toStream((err, stream) => {
+                            //     res.setHeader("Content-Type", "application/pdf");
+                            //     stream.pipe(res);
+                            // })
+                        ).toBuffer((err, buffer) => {
+                            // res.con("application/pdf");
                             res.setHeader("Content-Type", "application/pdf");
-                            stream.pipe(res);
+                            res.status(200).send(buffer);
                         })
 
                         // return res.status(200).json({ error: false, data: result })
