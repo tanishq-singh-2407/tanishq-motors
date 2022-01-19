@@ -30,7 +30,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: "Installing, and Deploying Function"
-        if: (github.event.inputs.checked)
+        if: github.event.inputs.checked == true
         run: |
           cd lambdas
           pwd
@@ -44,3 +44,7 @@ jobs:
             
             cd ..
           done
+
+        if: github.event.inputs.checked == true
+        run: echo "Did not updated lambda(s) code"
+        
