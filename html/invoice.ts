@@ -108,7 +108,7 @@ module.exports = (invoice: Invoice) => {
                 #page_1 {
                     position: absolute;
                     overflow: hidden;
-                    margin: 10% 15%;
+                    margin: auto;
                     padding: 0px;
                 }
 

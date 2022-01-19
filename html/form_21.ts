@@ -15,12 +15,14 @@ module.exports = (invoice: Invoice, item: number) => {
                 body {
                     margin: 0px;
                     padding: 0;
+                    display: flex;
+                    position: relative;
                 }
 
                 #page_1 {
-                    position: relative;
+                    position: absolute;
                     overflow: hidden;
-                    margin: 140px 0 0 140px;
+                    margin: auto;
                     padding: 0px;
                 }
 
