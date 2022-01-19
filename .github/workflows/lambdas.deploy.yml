@@ -14,33 +14,33 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-    if: (github.event.inputs.checked)
-      steps:
-        - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Use Node.js
-          uses: actions/setup-node@v2
-          with:
-            node-version: '14.x'
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
 
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-        - name: "Installing, and Deploying Function"
-          run: |
-            cd lambdas
-            pwd
-            for fun in html-to-pdf ; do
-              cd ${fun}
+      - name: "Installing, and Deploying Function"
+        if: (github.event.inputs.checked)
+        run: |
+          cd lambdas
+          pwd
+          for fun in html-to-pdf ; do
+            cd ${fun}
 
-              if [[ -f "index.js" ]]; then
-                zip -j deploy.zip ./*
-                aws lambda update-function-code --function-name=${fun} --zip-file=fileb://deploy.zip
-              fi
-              
-              cd ..
-            done
+            if [[ -f "index.js" ]]; then
+              zip -j deploy.zip ./*
+              aws lambda update-function-code --function-name=${fun} --zip-file=fileb://deploy.zip
+            fi
+            
+            cd ..
+          done
