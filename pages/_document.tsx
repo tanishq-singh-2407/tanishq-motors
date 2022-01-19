@@ -9,7 +9,9 @@ class MyDocument extends Document {
     render() {
         return (
             <Html>
-                <Head />
+                <Head>
+                    <meta name="mobile-web-app-capable" content="yes"></meta>
+                </ Head>
                 <body>
                     <Main />
                     <NextScript />
