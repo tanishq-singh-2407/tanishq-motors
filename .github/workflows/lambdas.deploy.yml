@@ -44,7 +44,3 @@ jobs:
             
             cd ..
           done
-
-        if: github.event.inputs.checked == true
-        run: echo "Did not updated lambda(s) code"
-        
