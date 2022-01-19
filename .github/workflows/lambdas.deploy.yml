@@ -6,7 +6,7 @@ on:
       checked:
         description: 'did lambda function code got updated from aws-console'     
         required: true
-        default: false
+        default: 'false'
 
 jobs:
   Deploy:
@@ -30,7 +30,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: "Installing, and Deploying Function"
-        if: github.event.inputs.checked == true
+        if: github.event.inputs.checked == 'true'
         run: |
           cd lambdas
           pwd
