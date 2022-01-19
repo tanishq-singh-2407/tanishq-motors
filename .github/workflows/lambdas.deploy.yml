@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-    if (github.event.inputs.environment) ; then
+    if: (github.event.inputs.environment)
       steps:
         - uses: actions/checkout@v2
 
@@ -44,4 +44,3 @@ jobs:
               
               cd ..
             done
-    fi
